@@ -106,9 +106,9 @@ fnnas-update
 | -s       | None         | None/DiskName | [SOS] Restore the system kernel on eMMC/NVMe/sdX or other disks |
 | -h       | None         | None          | View help |
 
-Example: `fnnas-update -k 6.12.63`
+Example: `fnnas-update -k 6.18.18`
 
-When specifying the kernel version via the `-k` parameter, you can specify an exact version number, e.g., `fnnas-update -k 6.12.63`, or specify a kernel series prefix, e.g., `fnnas-update -k 6.12`. When a series prefix is specified, the latest version within that series will be used automatically.
+When specifying the kernel version via the `-k` parameter, you can specify an exact version number, e.g., `fnnas-update -k 6.18.18`, or specify a kernel series prefix, e.g., `fnnas-update -k 6.18`. When a series prefix is specified, the latest version within that series will be used automatically.
 
 When updating the kernel, the current kernel is automatically backed up in the `/ddbr/backup` directory. The last 3 kernel versions are retained. If the newly installed kernel is unstable, you can roll back to a backed-up kernel at any time. If a kernel update causes the system to fail to boot, you can restore the system kernel via `fnnas-update -s`.
 
@@ -170,7 +170,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 
 3. Enter the `~/fnnas` root directory, create a `fnnas-arm64` folder, and place the FnNAS image file (e.g., `fnos_arm_1.0.0_258.img`) into the `~/fnnas/fnnas-arm64` directory.
 
-4. In the `~/fnnas` root directory, run `sudo ./renas -b s905x3 -k 6.12.63` to generate the FnNAS image file for the specified board. The generated files are saved in the `~/fnnas/out` directory.
+4. In the `~/fnnas` root directory, run `sudo ./renas -b s905x3 -k 6.18.18` to generate the FnNAS image file for the specified board. The generated files are saved in the `~/fnnas/out` directory.
 
 - ### Local Packaging Parameter Description
 
@@ -178,20 +178,17 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 | ----      | ----------  | ----------  |
 | -b        | Board       | Specifies the target device codename (default is `all`). You can specify a single device (e.g., `-b s905x3`) or connect multiple codenames with underscores to compile them together (e.g., `-b s905x3_s905d`). The parameter also supports special keywords for batch compilation: `all` compiles every device in the database, `first50` compiles the first 50 devices, `range50_100` compiles devices from the 51st to the 100th (similarly for `range100_150`), and `last20` compiles the last 20 devices. Additionally, you can compile by hardware platform (`amlogic`, `rockchip`, `allwinner`) to build all images for that specific platform, for example, `-b amlogic`. Appending numeric values to the platform name allows you to compile a specific range within that platform's support list; for example, `-b amlogic50` builds the first 50 devices under the Amlogic platform, and `-b amlogic50_100` builds the 51st to the 100th devices. For a complete list of supported device codenames, please refer to the `BOARD` configuration items in [model_database.conf](make-fnnas/fnnas-files/common-files/etc/model_database.conf). Default: `all` |
 | -r        | KernelRepo | Specifies the `<owner>/<repo>` of the github.com kernel repository. Default: `ophub/fnnas` |
-| -k        | Kernel     | Specifies the [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) version, e.g., `-k 6.12.63`. Multiple kernels are joined with `_`, e.g., `-k 6.12.63_6.18.3`. |
-| -a        | AutoKernel | Sets whether to automatically adopt the latest kernel version within the same series. When set to `true`, the kernel library is checked for a newer version in the same series as the kernel specified in `-k` (e.g., 6.12.63), and automatically switches to the latest version if available. When set to `false`, the specified kernel version is compiled. Default: `true` |
+| -k        | Kernel     | Specifies the [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) version, e.g., `-k 6.18.18`. Multiple kernels are joined with `_`, e.g., `-k 6.18.6_6.18.18`. |
+| -a        | AutoKernel | Sets whether to automatically adopt the latest kernel version within the same series. When set to `true`, the kernel library is checked for a newer version in the same series as the kernel specified in `-k` (e.g., 6.18.18), and automatically switches to the latest version if available. When set to `false`, the specified kernel version is compiled. Default: `true` |
 | -s        | Size       | Sets the system image partition size (Unit: MiB). When setting only the `ROOTFS` partition size, specify a single value, e.g., `-s 6144`. When setting both `BOOTFS` and `ROOTFS` partition sizes, join the two values with /, e.g., `-s 512/6144`. Default: `512/6144` |
 | -e        | RootfsExpand | Sets the automatic expansion size (Unit: GiB) of the system root partition. Default: `16` |
 | -n        | BuilderName | Sets the FnNAS system builder signature. Do not include spaces in the signature. Default: `None` |
 
 - `sudo ./renas` : Use default configuration to package for all TV box models.
-- `sudo ./renas -b s905x3 -k 6.12.63` : Recommended. Package with the specified kernel using default configuration.
-- `sudo ./renas -b s905x3 -k 6.12.y` : Use default configuration, automatically using the latest version of the 6.12.y series kernel.
-- `sudo ./renas -b s905x3_s905d -k 6.12.63_6.18.3` : Use default configuration to package multiple kernels simultaneously. Use `_` to join multiple kernel parameters.
-- `sudo ./renas -b s905x3 -k 6.12.63 -s 6144` : Use default configuration, specify one kernel and one model for packaging, with the system partition size set to `6144` MiB.
+- `sudo ./renas -b s905x3 -k 6.18.18` : Recommended. Package with the specified kernel using default configuration.
+- `sudo ./renas -b s905x3 -k 6.18.y` : Use default configuration, automatically using the latest version of the 6.18.y series kernel.
+- `sudo ./renas -b s905x3 -k 6.18.18 -s 6144` : Use default configuration, specify one kernel and one model for packaging, with the system partition size set to `6144` MiB.
 - `sudo ./renas -b s905x3_s905d` : Use default configuration to package all kernels for multiple TV box models. Use `_` to join multiple models.
-- `sudo ./renas -k 6.12.63_6.18.3` : Use default configuration, specify multiple kernels to package for all TV box models. Kernel parameters are joined with `_`.
-- `sudo ./renas -k 6.12.63_6.18.3 -a true` : Use default configuration, specify multiple kernels to package for all TV box models. Kernel parameters are joined with `_`. Automatically upgrade to the latest kernel within the same series.
 - `sudo ./renas -b s905x3 -e 32` : Use default configuration to package for the `s905x3` model, with the rootfs automatic expansion size set to `32` GiB.
 
 ## Building Images via GitHub Actions
@@ -207,7 +204,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
     build_target: fnnas
     fnnas_path: fnnas/*.img.xz
     fnnas_board: s905d_s905x3_s922x_s905x
-    fnnas_kernel: 6.12.y
+    fnnas_kernel: 6.18.y
     rootfs_expand: 16
 ```
 
@@ -220,7 +217,7 @@ The parameters correspond to the local packaging commands described above.
 | fnnas_path      | None          | Sets the path to the official Arm64 original FnNAS image file. Supports workflow file paths (e.g., `fnnas/*.img.xz`) and network download URLs (e.g., `https://fnnas.com/.../fnos_arm_1.0.0_258.img.xz`) |
 | fnnas_board     | all           | Sets the target `board` for packaging. Refer to `-b` for details |
 | kernel_repo     | ophub/fnnas   | Specifies the `<owner>/<repo>` of the github.com kernel repository. Refer to `-r` for details |
-| fnnas_kernel    | 6.12.y        | Sets the kernel [version](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas). Refer to `-k` for details |
+| fnnas_kernel    | 6.18.y        | Sets the kernel [version](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas). Refer to `-k` for details |
 | auto_kernel     | true          | Sets whether to automatically adopt the latest kernel within the same series. Refer to `-a` for details |
 | fnnas_size      | 512/6144      | Sets the `BOOTFS` and `ROOTFS` partition sizes. Refer to `-s` for details |
 | rootfs_expand   | 16            | Sets the automatic expansion size (Unit: GiB) of the system root partition. Refer to `-e` for details |
@@ -233,7 +230,7 @@ The parameters correspond to the local packaging commands described above.
 | -r | debs_repo | Specifies the `<owner>/<repo>` of the debs kernel repository on github.com. Default: `ophub/fnnas` |
 | -e | debs_install | Sets whether to install official `.deb` kernel packages for different platforms. Options: `amlogic` / `rockchip` / `allwinner` / `none`. Default: `none` |
 | -t | dtbs_install | Sets whether to install additional `dtbs` files missing from the official release. Options: `true` / `false`. Default: `true` |
-| -k | dtbs_version | Specifies the [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) version, e.g., `-k 6.12.63`. Default: `6.12.y` |
+| -k | dtbs_version | Specifies the [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) version, e.g., `-k 6.18.18`. Default: `6.18.y` |
 
 - `sudo ./rekernel` : Uses default configuration. Does not install debs kernel packages or supplement dtbs files; packages the kernel from the current FnNAS image directly.
 - `sudo ./rekernel -e amlogic` : Installs the `amlogic` debs kernel packages into the current system, then proceeds with kernel packaging.
@@ -251,7 +248,7 @@ For details on compiling the FnNAS-specific kernel, please refer to [build-fnnas
     build_target: kernel
     fnnas_path: fnnas/*.img
     dtbs_install: true
-    dtbs_version: 6.12.y
+    dtbs_version: 6.18.y
 ```
 
 The parameters correspond to the local packaging commands described above.
@@ -262,7 +259,7 @@ The parameters correspond to the local packaging commands described above.
 | debs_repo        | ophub/fnnas   | Specifies the `<owner>/<repo>` of the debs kernel repository on github.com. Refer to `-r` for details |
 | debs_install     | none          | Sets whether to install official `.deb` kernel packages. Refer to `-e` for details |
 | dtbs_install     | true          | Sets whether to install additional `dtbs` files missing from the official release. Refer to `-t` for details |
-| dtbs_version     | 6.12.y        | Sets the kernel version. Refer to `-k` for details |
+| dtbs_version     | 6.18.y        | Sets the kernel version. Refer to `-k` for details |
 
 - ### GitHub Actions Output Variable Description
 

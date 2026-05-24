@@ -104,9 +104,9 @@ fnnas-update
 | -s       | 无           | 无/磁盘名称     | [SOS] 恢复 eMMC/NVMe/sdX 等磁盘中的系统内核 |
 | -h       | 无           | 无             | 查看使用帮助                       |
 
-举例: `fnnas-update -k 6.12.63`
+举例: `fnnas-update -k 6.18.18`
 
-通过 `-k` 参数指定内核版本号时，可以准确指定具体版本号，例如：`fnnas-update -k 6.12.63`，也可以指定内核系列前缀，例如：`fnnas-update -k 6.12`，指定系列前缀时将自动采用该系列的最新版本。
+通过 `-k` 参数指定内核版本号时，可以准确指定具体版本号，例如：`fnnas-update -k 6.18.18`，也可以指定内核系列前缀，例如：`fnnas-update -k 6.18`，指定系列前缀时将自动采用该系列的最新版本。
 
 更新内核时会自动备份当前系统使用的内核，备份文件存储在 `/ddbr/backup` 目录下，保留最近 3 个历史版本的内核。若新内核运行不稳定，可随时回滚至备份的内核版本。若内核更新导致系统无法启动，可通过 `fnnas-update -s` 恢复系统内核。
 
@@ -168,7 +168,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 
 3. 进入 `~/fnnas` 根目录，创建 `fnnas-arm64` 文件夹，并将 FnNAS 镜像文件（如 `fnos_arm_1.0.0_258.img`）放入 `~/fnnas/fnnas-arm64` 目录。
 
-4. 在 `~/fnnas` 根目录下运行 `sudo ./renas -b s905x3 -k 6.12.63` 命令，即可生成指定设备的 FnNAS 镜像文件。生成的文件存储在 `~/fnnas/out` 目录下。
+4. 在 `~/fnnas` 根目录下运行 `sudo ./renas -b s905x3 -k 6.18.18` 命令，即可生成指定设备的 FnNAS 镜像文件。生成的文件存储在 `~/fnnas/out` 目录下。
 
 - ### 本地化打包镜像参数说明
 
@@ -176,20 +176,18 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 | ---- | ---------- | ---------- |
 | -b   | Board      | 指定目标设备代号。您可以指定具体设备进行编译（如 `-b s905x3`），或使用下划线连接多个设备代号同批编译（如 `-b s905x3_s905d`）。本参数还支持通过特殊关键字进行批量编译：`all` 表示编译全部设备，`first50` 表示编译设备库中的前 50 个，`range50_100` 表示编译从第 51 个至第 100 个设备（`range100_150` 同理），`last20` 表示最后 20 个。此外，支持按硬件平台（`amlogic`、`rockchip`、`allwinner`）进行分类编译，直接输入平台名称即可编译对应的所有镜像，例如 `-b amlogic`；若在平台名称后附加数值，则可指定编译该平台列表中的特定范围，例如 `-b amlogic50` 表示编译 Amlogic 平台支持列表中的前 50 个设备，`-b amlogic50_100` 表示编译从第 51 个至第 100 个设备。具体的设备代号支持列表，请详见 [model_database.conf](make-fnnas/fnnas-files/common-files/etc/model_database.conf) 中的 `BOARD` 配置项。默认值：`all` |
 | -r   | KernelRepo | 指定 github.com 内核仓库的 `<owner>/<repo>`。默认值：`ophub/fnnas` |
-| -k   | Kernel     | 指定 [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) 名称，如 `-k 6.12.63` 。多个内核使用 `_` 进行连接，如 `-k 6.12.63_6.18.3` 。 |
-| -a   | AutoKernel | 设置是否自动采用同系列最新版本内核。当为 `true` 时，将自动在内核库中检查 `-k` 指定的内核（如 6.12.63）同系列是否存在更新版本，若存在则自动切换至最新版本。设置为 `false` 时将编译指定版本的内核。默认值：`true` |
+| -k   | Kernel     | 指定 [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) 名称，如 `-k 6.18.18` 。多个内核使用 `_` 进行连接，如 `-k 6.18.6_6.18.18` 。 |
+| -a   | AutoKernel | 设置是否自动采用同系列最新版本内核。当为 `true` 时，将自动在内核库中检查 `-k` 指定的内核（如 6.18.18）同系列是否存在更新版本，若存在则自动切换至最新版本。设置为 `false` 时将编译指定版本的内核。默认值：`true` |
 | -s   | Size       | 设置系统镜像分区大小（单位：MiB）。仅设置 `ROOTFS` 分区大小时可只指定一个数值，例如：`-s 6144`。需同时设置 `BOOTFS` 和 `ROOTFS` 分区大小时，使用 / 连接两个数值，例如：`-s 512/6144`。默认值：`512/6144` |
 | -e   | RootfsExpand | 设置系统根分区自动扩容大小（单位：GiB）。默认值：`16` |
 | -n   | BuilderName | 设置 FnNAS 系统构建者签名。签名中请勿包含空格。默认值：`无` |
 
 - `sudo ./renas` : 使用默认配置，对全部型号的电视盒子进行打包。
-- `sudo ./renas -b s905x3 -k 6.12.63` : 推荐使用。使用默认配置打包指定内核。
-- `sudo ./renas -b s905x3 -k 6.12.y` : 使用默认配置打包，内核自动采用 6.12.y 系列的最新版。
-- `sudo ./renas -b s905x3_s905d -k 6.12.63_6.18.3` : 使用默认配置，同时打包多个内核。使用 `_` 连接多个内核参数。
-- `sudo ./renas -b s905x3 -k 6.12.63 -s 6144` : 使用默认配置，指定单个内核和单个型号进行打包，系统分区大小设定为 `6144` MiB。
+- `sudo ./renas -b s905x3 -k 6.18.18` : 推荐使用。使用默认配置打包指定内核。
+- `sudo ./renas -b s905x3 -k 6.18.y` : 使用默认配置打包，内核自动采用 6.18.y 系列的最新版。
+- `sudo ./renas -b s905x3 -k 6.18.18 -s 6144` : 使用默认配置，指定单个内核和单个型号进行打包，系统分区大小设定为 `6144` MiB。
 - `sudo ./renas -b s905x3_s905d` : 使用默认配置，对多个型号的电视盒子进行全部内核打包，使用 `_` 连接多个型号。
-- `sudo ./renas -k 6.12.63_6.18.3` : 使用默认配置，指定多个内核，对全部型号电视盒子进行打包，内核参数使用 `_` 连接。
-- `sudo ./renas -k 6.12.63_6.18.3 -a true` : 使用默认配置，指定多个内核，对全部型号电视盒子进行打包，内核参数使用 `_` 连接。自动升级至同系列最新内核。
+- `sudo ./renas -k 6.18.18 -a true` : 使用默认配置，指定多个内核，对全部型号电视盒子进行打包，内核参数使用 `_` 连接。自动升级至同系列最新内核。
 - `sudo ./renas -b s905x3 -e 32` : 使用默认配置，打包 `s905x3` 固件，系统根分区自动扩容大小设定为 `32` GiB。
 
 ## 使用 GitHub Actions 进行镜像编译
@@ -205,7 +203,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
     build_target: fnnas
     fnnas_path: fnnas/*.img.xz
     fnnas_board: s905d_s905x3_s922x_s905x
-    fnnas_kernel: 6.12.y
+    fnnas_kernel: 6.18.y
     rootfs_expand: 16
 ```
 
@@ -218,7 +216,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 | fnnas_path       | 无            | 设置官方 Arm64 原版 FnNAS 镜像文件的路径。支持使用当前工作流中的文件路径（如 `fnnas/*.img.xz`），也支持网络下载地址（如 `https://fnnas.com/.../fnos_arm_1.0.0_258.img.xz`） |
 | fnnas_board      | all           | 设置打包盒子的 `board` ，功能参考 `-b`                 |
 | kernel_repo      | ophub/fnnas   | 指定 github.com 内核仓库的 `<owner>/<repo>`，功能参考 `-r` |
-| fnnas_kernel     | 6.12.y        | 设置内核 [版本](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas)，功能参考 `-k` |
+| fnnas_kernel     | 6.18.y        | 设置内核 [版本](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas)，功能参考 `-k` |
 | auto_kernel      | true          | 设置是否自动采用同系列最新版本内核，功能参考 `-a`       |
 | fnnas_size       | 512/6144      | 设置系统 BOOTFS 和 ROOTFS 分区的大小，功能参考 `-s`   |
 | rootfs_expand    | 16            | 设置系统根分区自动扩容大小，功能参考 `-e`              |
@@ -231,7 +229,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 | -r   | debs_repo     | 指定 github.com 上 debs 内核仓库的 `<owner>/<repo>`。默认值：`ophub/fnnas` |
 | -e   | debs_install  | 设置是否安装官方提供的不同平台 debs 格式内核包。可选值：`amlogic` / `rockchip` / `allwinner` / `none`。默认值：`none` |
 | -t   | dtbs_install  | 设置是否补充安装官方缺失的 dtbs 文件。可选值：`true` / `false`。默认值：`true` |
-| -k   | dtbs_version  | 指定 [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) 名称，如 `-k 6.12.63`。默认值：`6.12.y` |
+| -k   | dtbs_version  | 指定 [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) 名称，如 `-k 6.18.18`。默认值：`6.18.y` |
 
 - `sudo ./rekernel` : 使用默认配置。不安装 debs 内核包也不补充 dtbs 文件，直接对当前 FnNAS 镜像中的内核进行打包。
 - `sudo ./rekernel -e amlogic` : 先将 amlogic 的 debs 内核包安装到当前系统，然后进行内核打包。
@@ -250,7 +248,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
     fnnas_path: fnnas/*.img
     debs_repo: ophub/fnnas
     dtbs_install: true
-    dtbs_version: 6.12.y
+    dtbs_version: 6.18.y
 ```
 
 相关参数与`本地打包命令`相对应，请参考上面的说明。
@@ -261,7 +259,7 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 | debs_repo        | ophub/fnnas   | 指定 github.com 的 debs 内核仓库的 `<owner>/<repo>`，功能参考 `-r` |
 | debs_install     | none          | 设置是否安装官方提供的不同平台的 debs 格式内核包。功能参考 `-e`   |
 | dtbs_install     | true          | 设置是否补充安装官方没有的 dtbs 文件。功能参考 `-t` |
-| dtbs_version     | 6.12.y        | 设置内核版本号。功能参考 `-k`                    |
+| dtbs_version     | 6.18.y        | 设置内核版本号。功能参考 `-k`                    |
 
 - ### GitHub Actions 输出变量说明
 

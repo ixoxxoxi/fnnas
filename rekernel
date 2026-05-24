@@ -54,8 +54,8 @@ debs_repo="https://github.com/ophub/fnnas"
 debs_install="none"
 # Whether to download and use DTB files (true/yes)
 dtbs_install="true"
-# Kernel DTB version to download (e.g., 6.12.y)
-dtbs_version="6.12.y"
+# Kernel DTB version to download (e.g., 6.18.y)
+dtbs_version="6.18.y"
 
 # Server information
 arch_info="$(uname -m)"
@@ -156,7 +156,7 @@ init_var() {
     [[ "${debs_repo}" =~ ^https: ]] && debs_repo="$(echo ${debs_repo} | awk -F'/' '{print $4"/"$5}')"
     kernel_api="https://github.com/${debs_repo}"
 
-    # Identify the kernel <VERSION> and <PATCHLEVEL>, such as [ 6.12 ]
+    # Identify the kernel <VERSION> and <PATCHLEVEL>, such as [ 6.18 ]
     kernel_verpatch="$(echo ${dtbs_version} | awk -F '.' '{print $1"."$2}')"
 }
 
@@ -171,7 +171,7 @@ download_debs() {
 
     cd "${current_path}"
 
-    # Get the latest version from github releases(e.g: 6.12.41)
+    # Get the latest version from github releases(e.g: 6.18.18)
     latest_version="$(
         curl -fsSL \
             ${kernel_api}/releases/expanded_assets/fnnas_debs |
@@ -225,7 +225,7 @@ download_dtbs() {
 
     cd "${current_path}"
 
-    # Get the latest version from github releases(e.g: 6.12.41)
+    # Get the latest version from github releases(e.g: 6.18.33)
     latest_version="$(
         curl -fsSL \
             https://github.com/ophub/kernel/releases/expanded_assets/kernel_stable |
